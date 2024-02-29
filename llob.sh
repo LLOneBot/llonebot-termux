@@ -17,7 +17,7 @@ apt update && apt install -y \
     libasound2 \
     fonts-wqy-zenhei \
     git \
-    gnutls-bin && \    
+    gnutls-bin && \
     apt autoremove -y && \
     apt clean && \
     rm -rf \
