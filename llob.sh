@@ -2,7 +2,7 @@
 export DEBIAN_FRONTEND=noninteractive
 
 # 安装必要的软件包
-apt-get update && apt-get install -y \
+apt update && apt install -y \
     openbox \
     curl \
     unzip \
@@ -18,7 +18,6 @@ apt-get update && apt-get install -y \
     fonts-wqy-zenhei \
     git \
     gnutls-bin && \    
-    apt purge -y wget && \
     apt autoremove -y && \
     apt clean && \
     rm -rf \
@@ -27,8 +26,8 @@ apt-get update && apt-get install -y \
     /var/tmp/*
 
 # 安装Linux QQ
-curl -o /root/linuxqq_3.2.5-21453_amd64.deb https://dldir1.qq.com/qqfile/qq/QQNT/852276c1/linuxqq_3.2.5-21453_amd64.deb && \
-dpkg -i /root/linuxqq_3.2.5-21453_amd64.deb && apt-get -f install -y && rm /root/linuxqq_3.2.5-21453_amd64.deb
+curl -o /root/linuxqq_3.2.5-21453_arm64.deb https://dldir1.qq.com/qqfile/qq/QQNT/852276c1/linuxqq_3.2.5-21453_arm64.deb && \
+dpkg -i /root/linuxqq_3.2.5-21453_arm64.deb && apt-get -f install -y && rm /root/linuxqq_3.2.5-21453_arm64.deb
 
 # 安装LiteLoader
 curl -L -o /tmp/LiteLoaderQQNT.zip https://mirror.ghproxy.com/https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/1.0.3/LiteLoaderQQNT.zip
