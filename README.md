@@ -145,3 +145,10 @@ bash /root/start.sh
 ### 7. 修改LLOneBot配置
 登录VNC后在QQ设置页面修改
 或直接修改配置文件 /opt/QQ/resources/app/LiteLoader/data/LLOneBot/config_$ACCOUNT.json，修改后重启 QQ 或 termux
+
+## 参考与基础
+[LLOneBot/LLOneBot](https://github.com/LLOneBot/LLOneBot)
+
+[yuuki-nya/chronocat-docker](https://github.com/yuuki-nya/chronocat-docker/blob/main/Dockerfile)
+
+[yudezeng/yutools](https://gitee.com/yudezeng/yutools)
