@@ -59,7 +59,6 @@ sleep 2
 x11vnc -storepasswd vncpasswd ~/.vnc/passwd
 sleep 2
 qq --no-sandbox &
-bash
 " > /root/start.sh
 
 # 安装LLOneBot  
