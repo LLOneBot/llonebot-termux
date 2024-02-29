@@ -2,8 +2,7 @@
 bash -c "$(curl -L https://github.com/LLOneBot/llonebot-termux/raw/main/debian.sh)"
 
 # 安装脚本
-curl -O https://github.com/LLOneBot/llonebot-termux/raw/main/llob.sh
-mv llob.sh bookworm-arm64/root/llob.sh
+wget -O bookworm-arm64/root/llob.sh https://github.com/LLOneBot/llonebot-termux/raw/main/llob.sh
 
 # 启动容器并安装
 unset LD_PRELOAD
