@@ -51,7 +51,7 @@
 
 ### 2.2 使用命令安装（不推荐）
 
-[点我](./step-by-step/readme.sh)
+[点我](./step-by-step/readme.md)
 
 ### 2.3 使用一键脚本（推荐）
    ```shell
