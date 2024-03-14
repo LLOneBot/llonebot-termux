@@ -14,8 +14,7 @@
    * 2.3 方法3. 使用一键脚本（推荐）
 - 3. 启动 VNC
 - 4. 登录 VNC
-- 5. 登录 Linux QQ
-- 6. 修改 LLOneBot 配置
+- 5. 修改 LLOneBot 配置
 
 ## 1. 安装 ZeroTermux 和 VncView
 前往[hanxinhao000/ZeroTermux](https://github.com/hanxinhao000/ZeroTermux/releases)下载 ZeroTermux 安装包并安装
@@ -60,18 +59,22 @@
 ### 3. 启动 VNC
 >如果你使用的是恢复包，VNC将会在进入终端时自启
 如果你的 LLOneBot 是用命令安装的，那么你需要手动启动
+
+如果你还没有进入容器
+判断方法输入 `uname -a` ，如果输出信息以 `Android` 结尾，则未进入 proot 容器
 ```shell
+# 请先进入容器
+bash bookworm-arm64.sh
+```
+```shell
+# 启动
 bash /root/start.sh
 ```
 
 ### 4. 登录vnc
 使用VNC软件登陆服务器IP:5900 默认密码是vncpasswd
 
-### 5. 登录qqnt
-在终端中输入qq, 回车
-一段时间后桌面会弹出二维码，扫码即可
-
-### 7. 修改LLOneBot配置
+### 5. 修改LLOneBot配置
 登录VNC后在QQ设置页面修改
 或直接修改配置文件 /opt/QQ/resources/app/LiteLoader/data/LLOneBot/config_$ACCOUNT.json，修改后重启 QQ 或 termux
 
