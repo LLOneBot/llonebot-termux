@@ -50,79 +50,8 @@
 </details>
 
 ### 2.2 使用命令安装（不推荐）
-<details>
-  <summary>点击展开内容！</summary>
 
-#### 2.2.1 安装linux容器
-   输入命令
-   ```shell
-   bash -c "$(curl -L https://github.com/LLOneBot/llonebot-termux/raw/main/debian.sh)"
-   ```
-#### 2.2.2 安装图形界面 
-   ```shell
-   # 进入容器
-   bash bookworm-arm64.sh
-   # 安装图形界面
-   apt-get update && apt-get install -y \
-    openbox \
-    curl \
-    unzip \
-    x11vnc \
-    xvfb \
-    fluxbox \
-    supervisor \
-    libnotify4 \
-    libnss3 \
-    xdg-utils \
-    libsecret-1-0 \
-    libasound2 \
-    fonts-wqy-zenhei \
-    gnutls-bin && \    
-    apt autoremove -y && \
-    apt clean && \
-    rm -rf \
-    /var/lib/apt/lists/* \
-    /tmp/* \
-    /var/tmp/*
-   ```
-#### 2.2.3 安装 qq
-   ```shell
-   curl -o /root/linuxqq_3.2.5-21453_arm64.deb https://dldir1.qq.com/qqfile/qq/QQNT/852276c1/linuxqq_3.2.5-21453_arm64.deb && \
-   dpkg -i /root/linuxqq_3.2.5-21453_arm64.deb && apt-get -f install -y && rm /root/linuxqq_3.2.5-21453_arm64.deb
-   ```
-#### 2.2.4 [安装liteloader](https://liteloaderqqnt.github.io/guide/install.html)
-   ```shell
-   curl -L -o /tmp/LiteLoaderQQNT.zip https://mirror.ghproxy.com/https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/1.0.3/LiteLoaderQQNT.zip && \
-   mkdir -p /opt/QQ/resources/app/LiteLoader && \
-   unzip /tmp/LiteLoaderQQNT.zip -d /opt/QQ/resources/app/LiteLoader && \
-   sed -i '1s/^/require("\/opt\/QQ\/resources\/app\/LiteLoader");\n/' /opt/QQ/resources/app/app_launcher/index.js && \
-   rm /tmp/LiteLoaderQQNT.zip
-   ```
-#### 2.2.4[安装LLOneBot](https://github.com/LLOneBot/LLOneBot)
-   ```shell
-   mkdir -p /opt/QQ/resources/app/LiteLoader/plugins/LLOneBot && \
-   curl -L -o /tmp/LLOneBot.zip https://mirror.ghproxy.com/https://github.com/LLOneBot/LLOneBot/releases/download/v3.14.0/LLOneBot.zip && \
-   unzip /tmp/LLOneBot.zip -d /opt/QQ/resources/app/LiteLoader/plugins/LLOneBot/ && \
-   rm /tmp/LLOneBot.zip
-   ```
-
-#### 启动脚本
-   ```shell
-   #!/bin/bash
-   service dbus start
-   rm -f /tmp/.X1-lock
-   export DISPLAY=:1
-   Xvfb :1 -screen 0 720x512x16 &
-   fluxbox &
-   sleep 2
-   x11vnc -display :1 -noxrecord -noxfixes -noxdamage -forever -rfbauth ~/.vnc/passwd &
-   sleep 2
-   x11vnc -storepasswd vncpasswd ~/.vnc/passwd
-   sleep 2
-   qq --no-sandbox &
-   bash
-   ```
-</details>
+[点我](./step-by-step/readme.sh)
 
 ### 2.3 使用一键脚本（推荐）
    ```shell
