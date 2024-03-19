@@ -6,9 +6,7 @@ apt update && apt install -y \
     openbox \
     curl \
     unzip \
-    x11vnc \
     xvfb \
-    fluxbox \
     supervisor \
     libnotify4 \
     libnss3 \

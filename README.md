@@ -7,13 +7,13 @@
 - 支持持久化 QQ 登录状态和数据
 
 # 目录：
-- 1. 安装 ZeroTermux 和 VncView
+- 1. 安装 Termux
 - 2. 安装 LLOneBot
    * 2.1 方法1. 使用恢复包安装（推荐）
    * 2.2 方法2. 使用命令安装
    * 2.3 方法3. 使用一键脚本（推荐）
-- 3. 启动 VNC
-- 4. 登录 VNC
+- 3. 启动
+- 4. 远程
 - 5. 修改 LLOneBot 配置
 
 ## 1. 安装 ZeroTermux 和 VncView
@@ -71,12 +71,11 @@ bash bookworm-arm64.sh
 bash /root/start.sh
 ```
 
-### 4. 登录vnc
-使用VNC软件登陆服务器IP:5900 默认密码是vncpasswd
+### 4. 远程登录
+浏览器访问`http://localhost:6099/api/panel/getQQLoginQRcode`
 
 ### 5. 修改LLOneBot配置
-登录VNC后在QQ设置页面修改
-或直接修改配置文件 /opt/QQ/resources/app/LiteLoader/data/LLOneBot/config_$ACCOUNT.json，修改后重启 QQ 或 termux
+浏览器访问`http://localhost:6099/plugin/LLOneBot/iframe.html`
 
 ## 参考与基础
 [LLOneBot/LLOneBot](https://github.com/LLOneBot/LLOneBot)
