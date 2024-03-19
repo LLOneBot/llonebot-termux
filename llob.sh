@@ -24,7 +24,7 @@ apt update && apt install -y \
     /var/tmp/*
 
 # 安装Linux QQ
-curl -o /root/linuxqq.deb https://dldir1.qq.com/qqfile/qq/QQNT/Linux/QQ_3.2.5_240305_arm64_01.deb && \
+curl -o /root/linuxqq.deb https://dldir1.qq.com/qqfile/qq/QQNT/Linux/QQ_3.2.5_240305_arm64_01.deb
 dpkg -i /root/linuxqq.deb && apt-get -f install -y && rm /root/linuxqq.deb
 
 # 安装LiteLoader
@@ -38,8 +38,8 @@ curl -L -o /tmp/LiteLoaderQQNT.zip https://mirror.ghproxy.com/https://github.com
 # 配置supervisor
 echo "[supervisord]" > /etc/supervisord.conf
 echo "nodaemon=true" >> /etc/supervisord.conf
-echo "[program:qq]" >> /etc/supervisord.conf && \
-echo "command=qq --no-sandbox" >> /etc/supervisord.conf && \
+echo "[program:qq]" >> /etc/supervisord.conf
+echo "command=qq --no-sandbox" >> /etc/supervisord.conf
 echo 'environment=DISPLAY=":1"' >> /etc/supervisord.conf
 
 # 创建启动脚本
@@ -54,11 +54,12 @@ export DISPLAY=:1
 exec supervisord > /dev/null &" > /root/start.sh
 
 # 安装LLOneBot  
-mkdir -p /opt/QQ/resources/app/LiteLoader/plugins/LLOneBot && \
-curl -L -o /tmp/LLOneBot.zip https://mirror.ghproxy.com/https://github.com/LLOneBot/LLOneBot/releases/download/v3.16.1/LLOneBot.zip && \
-curl -L -o /tmp/LLWebUiApi.zip https://mirror.ghproxy.com/https://github.com/LLOneBot/LLWebUiApi/releases/download/v0.0.31/LLWebUiApi.zip && \
-unzip /tmp/LLOneBot.zip -d /opt/QQ/resources/app/LiteLoader/plugins/LLOneBot/ && \
-unzip /tmp/LLWebUiApi.zip -d /opt/QQ/resources/app/LiteLoader/plugins/LLWebUiApi/ && \
+mkdir -p /opt/QQ/resources/app/LiteLoader/plugins/LLOneBot
+mkdir -p /opt/QQ/resources/app/LiteLoader/plugins/LLWebUiApi
+curl -L -o /tmp/LLOneBot.zip https://mirror.ghproxy.com/https://github.com/LLOneBot/LLOneBot/releases/download/v3.16.1/LLOneBot.zip
+curl -L -o /tmp/LLWebUiApi.zip https://mirror.ghproxy.com/https://github.com/LLOneBot/LLWebUiApi/releases/download/v0.0.31/LLWebUiApi.zip
+unzip /tmp/LLOneBot.zip -d /opt/QQ/resources/app/LiteLoader/plugins/LLOneBot
+unzip /tmp/LLWebUiApi.zip -d /opt/QQ/resources/app/LiteLoader/plugins/LLWebUiApi
 rm /tmp/LLOneBot.zip /tmp/LLWebUiApi.zip
 echo -e "LLOneBot 安装完成
 现在你可以输入命令 \e[32mbash start.sh\e[0m 来启动服务"
