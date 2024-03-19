@@ -26,7 +26,9 @@ apt update && apt install -y \
 
 # 安装Linux QQ
 curl -o /root/linuxqq.deb https://dldir1.qq.com/qqfile/qq/QQNT/Linux/QQ_3.2.5_240305_arm64_01.deb
-dpkg -i /root/linuxqq.deb && apt-get -f install -y && rm /root/linuxqq.deb
+dpkg -i /root/linuxqq.deb 
+apt-get -f install -y
+rm /root/linuxqq.deb
 
 # 安装LiteLoader
 curl -L -o /tmp/LiteLoaderQQNT.zip https://mirror.ghproxy.com/https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/1.0.3/LiteLoaderQQNT.zip
