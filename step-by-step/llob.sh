@@ -17,6 +17,7 @@ export DISPLAY=:1
 exec supervisord > /dev/null &" > /root/start.sh
 
 # 安装LLWebUiApi
+mkdir -p /opt/QQ/resources/app/LiteLoader/plugins/LLWebUiApi
 curl -L -o /tmp/LLWebUiApi.zip https://mirror.ghproxy.com/https://github.com/LLOneBot/LLWebUiApi/releases/download/v0.0.31/LLWebUiApi.zip
 unzip /tmp/LLWebUiApi.zip -d /opt/QQ/resources/app/LiteLoader/plugins/LLWebUiApi
 mkdir -p /opt/QQ/resources/app/LiteLoader/data/LLWebUiApi
@@ -25,7 +26,6 @@ rm /tmp/LLWebUiApi.zip
 
 # 安装LLOneBot  
 mkdir -p /opt/QQ/resources/app/LiteLoader/plugins/LLOneBot
-mkdir -p /opt/QQ/resources/app/LiteLoader/plugins/LLWebUiApi
 curl -L -o /tmp/LLOneBot.zip https://mirror.ghproxy.com/https://github.com/LLOneBot/LLOneBot/releases/download/v3.16.1/LLOneBot.zip
 unzip /tmp/LLOneBot.zip -d /opt/QQ/resources/app/LiteLoader/plugins/LLOneBot
 rm /tmp/LLOneBot.zip 
