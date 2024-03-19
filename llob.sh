@@ -10,6 +10,7 @@ apt update && apt install -y \
     supervisor \
     libnotify4 \
     libnss3 \
+    libxss1 \
     xdg-utils \
     libsecret-1-0 \
     libasound2 \
