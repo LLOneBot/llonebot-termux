@@ -56,9 +56,7 @@
    ```shell
    bash -c "$(curl -L https://github.com/LLOneBot/llonebot-termux/raw/main/onekey.sh)"
    ```
-### 3. 启动 VNC
->如果你使用的是恢复包，VNC将会在进入终端时自启
-如果你的 LLOneBot 是用命令安装的，那么你需要手动启动
+### 3. 启动
 
 如果你还没有进入容器
 判断方法输入 `uname -a` ，如果输出信息以 `Android` 结尾，则未进入 proot 容器
