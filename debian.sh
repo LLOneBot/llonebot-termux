@@ -257,11 +257,6 @@ setup_fake_proc() {
 		EOF
 	fi
 
-    if [ ! -f "$sys_name-$AH/etc/proc/bus/pci/00" ]; then
-		cat <<- EOF > "$sys_name-$AH/etc/proc/bus/pci/00"
-		40
-		EOF
-	fi
 }
 
 # 检测是否安装过
@@ -371,8 +366,6 @@ proot \
  --bind=$sys_name-$AH/etc/proc/.uptime:/proc/uptime \
  --bind=$sys_name-$AH/etc/proc/.stat:/proc/stat \
  --bind=$sys_name-$AH/etc/proc/.loadavg:/proc/loadavg  \
- --bind=$sys_name-$AH/etc/proc/bus/pci/00:/proc/bus/pci/00 \
- --bind=$sys_name-$AH/etc/proc/devices:/proc/bus/devices \
  --bind=$sys_name-$AH/etc/proc/bus/input/devices:/proc/bus/input/devices \
  --bind=$sys_name-$AH/etc/proc/modules:/proc/modules   \
  --bind=/sys \
