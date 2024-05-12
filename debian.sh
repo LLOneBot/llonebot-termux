@@ -5,16 +5,10 @@ else
     exit 1
 fi
 
-AH=$(uname -m)
+AH=$(uname -m | sed s/aarch64/arm64/ | sed s/x86_64/amd64/)
 sys_name="bookworm"
 BAGNAME="rootfs.tar.xz"
 SLEEP_TIME=0.1
-
-if [ "$AH" = "aarch64" ]; then
-    AH="arm64"
-elif [ "$AH" = "x86_64" ]; then
-    AH="amd64"
-fi
 
 cd ~
 
