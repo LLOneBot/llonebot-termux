@@ -25,8 +25,9 @@ echo '{"Server":{"Port":6099},"AutoLogin":true,"BootMode":3,"Debug":false}' > /o
 rm /tmp/LLWebUiApi.zip
 
 # 安装LLOneBot  
+version=$(curl -Ls "https://api.github.com/repos/LLOneBot/LLOneBot/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 mkdir -p /opt/QQ/resources/app/LiteLoader/plugins/LLOneBot
-curl -L -o /tmp/LLOneBot.zip https://mirror.ghproxy.com/https://github.com/LLOneBot/LLOneBot/releases/download/v3.16.1/LLOneBot.zip
+curl -L -o /tmp/LLOneBot.zip https://mirror.ghproxy.com/https://github.com/LLOneBot/LLOneBot/releases/download/$version}/LLOneBot.zip
 unzip /tmp/LLOneBot.zip -d /opt/QQ/resources/app/LiteLoader/plugins/LLOneBot
 rm /tmp/LLOneBot.zip 
 echo -e "LLOneBot 安装完成
