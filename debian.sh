@@ -7,6 +7,7 @@ fi
 
 AH=$(uname -m | sed s/aarch64/arm64/ | sed s/x86_64/amd64/)
 SYS_NAME="bookworm"
+ROOTFS_DIR="$SYS_NAME-$AH"
 BAGNAME="rootfs.tar.xz"
 SLEEP_TIME=0.1
 
@@ -14,17 +15,17 @@ cd ~
 
 # Fork from https://github.com/termux/proot-distro
 setup_fake_proc() {
-	mkdir -p "$SYS_NAME-$AH/etc/proc"
-	chmod 700 "$SYS_NAME-$AH/etc/proc"
+	mkdir -p "$ROOTFS_DIR/etc/proc"
+	chmod 700 "$ROOTFS_DIR/etc/proc"
 
-	if [ ! -f "$SYS_NAME-$AH/etc/proc/.loadavg" ]; then
-		cat <<- EOF > "$SYS_NAME-$AH/etc/proc/.loadavg"
+	if [ ! -f "$ROOTFS_DIR/etc/proc/.loadavg" ]; then
+		cat <<- EOF > "$ROOTFS_DIR/etc/proc/.loadavg"
 		0.12 0.07 0.02 2/165 765
 		EOF
 	fi
 
-	if [ ! -f "$SYS_NAME-$AH/etc/proc/.stat" ]; then
-		cat <<- EOF > "$SYS_NAME-$AH/etc/proc/.stat"
+	if [ ! -f "$ROOTFS_DIR/etc/proc/.stat" ]; then
+		cat <<- EOF > "$ROOTFS_DIR/etc/proc/.stat"
 		cpu  1957 0 2877 93280 262 342 254 87 0 0
 		cpu0 31 0 226 12027 82 10 4 9 0 0
 		cpu1 45 0 664 11144 21 263 233 12 0 0
@@ -44,20 +45,20 @@ setup_fake_proc() {
 		EOF
 	fi
 
-	if [ ! -f "$SYS_NAME-$AH/etc/proc/.uptime" ]; then
-		cat <<- EOF > "$SYS_NAME-$AH/etc/proc/.uptime"
+	if [ ! -f "$ROOTFS_DIR/etc/proc/.uptime" ]; then
+		cat <<- EOF > "$ROOTFS_DIR/etc/proc/.uptime"
 		124.08 932.80
 		EOF
 	fi
 
-	if [ ! -f "$SYS_NAME-$AH/etc/proc/.version" ]; then
-		cat <<- EOF > "$SYS_NAME-$AH/etc/proc/.version"
+	if [ ! -f "$ROOTFS_DIR/etc/proc/.version" ]; then
+		cat <<- EOF > "$ROOTFS_DIR/etc/proc/.version"
 		Linux version ${DEFAULT_FAKE_KERNEL_VERSION} (proot@termux) (gcc (GCC) 12.2.1 20230201, GNU ld (GNU Binutils) 2.40) #1 SMP PREEMPT_DYNAMIC Wed, 01 Mar 2023 00:00:00 +0000
 		EOF
 	fi
 
-	if [ ! -f "$SYS_NAME-$AH/etc/proc/.vmstat" ]; then
-		cat <<- EOF > "$SYS_NAME-$AH/etc/proc/.vmstat"
+	if [ ! -f "$ROOTFS_DIR/etc/proc/.vmstat" ]; then
+		cat <<- EOF > "$ROOTFS_DIR/etc/proc/.vmstat"
 		nr_free_pages 1743136
 		nr_zone_inactive_anon 179281
 		nr_zone_active_anon 7183
@@ -239,20 +240,20 @@ setup_fake_proc() {
 		EOF
 	fi
 
-	if [ ! -f "$SYS_NAME-$AH/etc/proc/.sysctl_entry_cap_last_cap" ]; then
-		cat <<- EOF > "$SYS_NAME-$AH/etc/proc/.sysctl_entry_cap_last_cap"
+	if [ ! -f "$ROOTFS_DIR/etc/proc/.sysctl_entry_cap_last_cap" ]; then
+		cat <<- EOF > "$ROOTFS_DIR/etc/proc/.sysctl_entry_cap_last_cap"
 		40
 		EOF
 	fi
 
-    if [ ! -f "$SYS_NAME-$AH/etc/proc/.sysctl_entry_cap_last_cap" ]; then
-		cat <<- EOF > "$SYS_NAME-$AH/etc/proc/.sysctl_entry_cap_last_cap"
+    if [ ! -f "$ROOTFS_DIR/etc/proc/.sysctl_entry_cap_last_cap" ]; then
+		cat <<- EOF > "$ROOTFS_DIR/etc/proc/.sysctl_entry_cap_last_cap"
 		40
 		EOF
 	fi
 
-    if [ ! -f "$SYS_NAME-$AH/etc/proc/.bus/input/devices" ]; then
-		cat <<- EOF > "$SYS_NAME-$AH/etc/proc/.bus/input/devices"
+    if [ ! -f "$ROOTFS_DIR/etc/proc/.bus/input/devices" ]; then
+		cat <<- EOF > "$ROOTFS_DIR/etc/proc/.bus/input/devices"
 		I: Bus=0019 Vendor=0000 Product=0001 Version=0000
         N: Name="Power Button"
         P: Phys=LNXPWRBN/button/input0
@@ -333,8 +334,8 @@ setup_fake_proc() {
 		EOF
 	fi
 
-    if [ ! -f "$SYS_NAME-$AH/etc/proc/.modules" ]; then
-		cat <<- EOF > "$SYS_NAME-$AH/etc/proc/.modules"
+    if [ ! -f "$ROOTFS_DIR/etc/proc/.modules" ]; then
+		cat <<- EOF > "$ROOTFS_DIR/etc/proc/.modules"
 		bluetooth 552960 0 - Live 0x0000000000000000
         ecdh_generic 24576 1 bluetooth, Live 0x0000000000000000
         tcp_diag 16384 0 - Live 0x0000000000000000
@@ -363,14 +364,14 @@ setup_fake_proc() {
 }
 
 # 检测是否安装过
-if [ -f "$SYS_NAME-$AH/root/.bashrc" ]; then
-    echo -e "现在可以执行 ./$SYS_NAME-$AH.sh 运行 $SYS_NAME-$AH系统"
+if [ -f "$ROOTFS_DIR/root/.bashrc" ]; then
+    echo -e "现在可以执行 ./$ROOTFS_DIR.sh 运行 $ROOTFS_DIR系统"
     exit 1
 else
     echo 正在安装依赖
 fi
 
-mkdir $SYS_NAME-$AH
+mkdir $ROOTFS_DIR
 
 echo "正在切换apt镜像源"
 
@@ -395,12 +396,12 @@ echo "======================================="
 
 # 下载rootfs
 if [ -e ${BAGNAME} ]; then
-    tar -xvf rootfs.tar.xz -C $SYS_NAME-$AH
+    tar -xvf rootfs.tar.xz -C $ROOTFS_DIR
 else
 	wget ${DEF_CUR}
-	tar -xvf rootfs.tar.xz -C $SYS_NAME-$AH
+	tar -xvf rootfs.tar.xz -C $ROOTFS_DIR
 rm -rf ${BAGNAME}
-echo -e "$SYS_NAME-$AH 系统已下载，文件夹名为$SYS_NAME-$AH"
+echo -e "$ROOTFS_DIR 系统已下载，文件夹名为$ROOTFS_DIR"
 fi
 sleep $SLEEP_TIME
 
@@ -409,21 +410,21 @@ neofetch >>systeminfo.log
 hostinfo=$(cat systeminfo.log |grep Host |awk -F':' '{print $2}')
 echo "更新DNS"
 sleep $SLEEP_TIME
-echo "127.0.0.1 localhost" > $SYS_NAME-$AH/etc/hosts
-rm $SYS_NAME-$AH/etc/hostname
-echo "$hostinfo" > $SYS_NAME-$AH/etc/hostname
-echo "127.0.0.1 $hostinfo" > $SYS_NAME-$AH/etc/hosts
-rm -rf $SYS_NAME-$AH/etc/resolv.conf &&
+echo "127.0.0.1 localhost" > $ROOTFS_DIR/etc/hosts
+rm $ROOTFS_DIR/etc/hostname
+echo "$hostinfo" > $ROOTFS_DIR/etc/hostname
+echo "127.0.0.1 $hostinfo" > $ROOTFS_DIR/etc/hosts
+rm -rf $ROOTFS_DIR/etc/resolv.conf &&
 echo "nameserver 223.5.5.5
 nameserver 223.6.6.6
-nameserver 114.114.114.114" >$SYS_NAME-$AH/etc/resolv.conf
+nameserver 114.114.114.114" >$ROOTFS_DIR/etc/resolv.conf
 echo "设置时区"
 sleep $SLEEP_TIME
 rm systeminfo.log
-echo "export  TZ='Asia/Shanghai'" >> $SYS_NAME-$AH/root/.bashrc
-echo "export  TZ='Asia/Shanghai'" >> $SYS_NAME-$AH/etc/profile
-echo "export PULSE_SERVER=tcp:127.0.0.1:4173" >> $SYS_NAME-$AH/etc/profile
-echo "export PULSE_SERVER=tcp:127.0.0.1:4173" >> $SYS_NAME-$AH/root/.bashrc
+echo "export  TZ='Asia/Shanghai'" >> $ROOTFS_DIR/root/.bashrc
+echo "export  TZ='Asia/Shanghai'" >> $ROOTFS_DIR/etc/profile
+echo "export PULSE_SERVER=tcp:127.0.0.1:4173" >> $ROOTFS_DIR/etc/profile
+echo "export PULSE_SERVER=tcp:127.0.0.1:4173" >> $ROOTFS_DIR/root/.bashrc
 echo 检测到你没有权限读取/proc内的所有文件
 echo 将自动伪造新文件
 mkdir proot_proc
@@ -436,12 +437,12 @@ tar -xvJf proot_proc/proc.tar.xz -C tmp
 cp -r tmp/usr/local/etc/tmoe-linux/proot_proc tmp/
 sleep $SLEEP_TIME
 echo 复制文件
-cp -r tmp/proot_proc $SYS_NAME-$AH/etc/proc
+cp -r tmp/proot_proc $ROOTFS_DIR/etc/proc
 sleep $SLEEP_TIME
 echo 删除缓存
 rm proot_proc tmp -rf
-if grep -q 'ubuntu' "$SYS_NAME-$AH/etc/os-release" ; then
-    touch "$SYS_NAME-$AH/root/.hushlogin"
+if grep -q 'ubuntu' "$ROOTFS_DIR/etc/os-release" ; then
+    touch "$ROOTFS_DIR/root/.hushlogin"
 fi
 
 sleep $SLEEP_TIME
@@ -450,7 +451,7 @@ echo "写入启动脚本"
 echo "为了兼容性考虑已将内核信息伪造成5.17.18-perf"
 
 sleep $SLEEP_TIME
-cat > $SYS_NAME-$AH.sh <<- EOM
+cat > $ROOTFS_DIR.sh <<- EOM
 #!/bin/bash
 unset LD_PRELOAD
 proot \
@@ -462,15 +463,15 @@ proot \
  --bind=/data/data/com.termux/files/home \
  --bind=/data/data/com.termux/cache \
  --bind=/data/dalvik-cache \
- --bind=$SYS_NAME-$AH/tmp:/dev/shm \
- --bind=$SYS_NAME-$AH/etc/proc/.sysctl_entry_cap_last_cap:/proc/sys/kernel/cap_last_cap
- --bind=$SYS_NAME-$AH/etc/proc/.vmstat:/proc/vmstat \
- --bind=$SYS_NAME-$AH/etc/proc/.version:/proc/version \
- --bind=$SYS_NAME-$AH/etc/proc/.uptime:/proc/uptime \
- --bind=$SYS_NAME-$AH/etc/proc/.stat:/proc/stat \
- --bind=$SYS_NAME-$AH/etc/proc/.loadavg:/proc/loadavg  \
- --bind=$SYS_NAME-$AH/etc/proc/.bus/input/devices:/proc/bus/input/devices \
- --bind=$SYS_NAME-$AH/etc/proc/.modules:/proc/modules   \
+ --bind=$ROOTFS_DIR/tmp:/dev/shm \
+ --bind=$ROOTFS_DIR/etc/proc/.sysctl_entry_cap_last_cap:/proc/sys/kernel/cap_last_cap
+ --bind=$ROOTFS_DIR/etc/proc/.vmstat:/proc/vmstat \
+ --bind=$ROOTFS_DIR/etc/proc/.version:/proc/version \
+ --bind=$ROOTFS_DIR/etc/proc/.uptime:/proc/uptime \
+ --bind=$ROOTFS_DIR/etc/proc/.stat:/proc/stat \
+ --bind=$ROOTFS_DIR/etc/proc/.loadavg:/proc/loadavg  \
+ --bind=$ROOTFS_DIR/etc/proc/.bus/input/devices:/proc/bus/input/devices \
+ --bind=$ROOTFS_DIR/etc/proc/.modules:/proc/modules   \
  --bind=/sys \
  --bind=/proc/self/fd/2:/dev/stderr \
  --bind=/proc/self/fd/1:/dev/stdout \
@@ -479,7 +480,7 @@ proot \
  --bind=/proc \
  --bind=/dev/urandom:/dev/random \
  --bind=/data/data/com.termux/files/usr/tmp:/tmp \
- --bind=/data/data/com.termux/files:$SYS_NAME-$AH/termux \
+ --bind=/data/data/com.termux/files:$ROOTFS_DIR/termux \
  --bind=/dev \
  --root-id \
  --cwd=/root \
@@ -488,9 +489,9 @@ proot \
  --sysvipc \
  --link2symlink \
  --kill-on-exit \
- --rootfs=$SYS_NAME-$AH/ /usr/bin/env -i HOME=/root LANG=zh_CN.UTF-8 TERM=xterm-256color /bin/su -l root
+ --rootfs=$ROOTFS_DIR/ /usr/bin/env -i HOME=/root LANG=zh_CN.UTF-8 TERM=xterm-256color /bin/su -l root
 EOM
 
 echo "授予启动脚本执行权限"
-chmod +x $SYS_NAME-$AH.sh
-echo -e "现在可以执行 ./$SYS_NAME-$AH.sh 运行 $SYS_NAME-$AH系统"
+chmod +x $ROOTFS_DIR.sh
+echo -e "现在可以执行 ./$ROOTFS_DIR.sh 运行 $ROOTFS_DIR系统"
