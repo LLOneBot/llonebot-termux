@@ -257,6 +257,115 @@ setup_fake_proc() {
 		EOF
 	fi
 
+    if [ ! -f "$sys_name-$AH/etc/proc/.bus/input/devices" ]; then
+		cat <<- EOF > "$sys_name-$AH/etc/proc/.bus/input/devices"
+		I: Bus=0019 Vendor=0000 Product=0001 Version=0000
+        N: Name="Power Button"
+        P: Phys=LNXPWRBN/button/input0
+        S: Sysfs=/devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+        U: Uniq=
+        H: Handlers=kbd event0 
+        B: PROP=0
+        B: EV=3
+        B: KEY=10000000000000 0
+
+        I: Bus=0003 Vendor=0627 Product=0001 Version=0001
+        N: Name="QEMU QEMU USB Tablet"
+        P: Phys=usb-0000:00:01.2-1/input0
+        S: Sysfs=/devices/pci0000:00/0000:00:01.2/usb1/1-1/1-1:1.0/0003:0627:0001.0001/input/input1
+        U: Uniq=28754-0000:00:01.2-1
+        H: Handlers=mouse0 event1 js0 
+        B: PROP=0
+        B: EV=1f
+        B: KEY=70000 0 0 0 0
+        B: REL=100
+        B: ABS=3
+        B: MSC=10
+
+        I: Bus=0011 Vendor=0001 Product=0001 Version=ab41
+        N: Name="AT Translated Set 2 keyboard"
+        P: Phys=isa0060/serio0/input0
+        S: Sysfs=/devices/platform/i8042/serio0/input/input2
+        U: Uniq=
+        H: Handlers=kbd leds event2 
+        B: PROP=0
+        B: EV=120013
+        B: KEY=402000000 3803078f800d001 feffffdfffefffff fffffffffffffffe
+        B: MSC=10
+        B: LED=7
+
+        I: Bus=0011 Vendor=0002 Product=0013 Version=0006
+        N: Name="VirtualPS/2 VMware VMMouse"
+        P: Phys=isa0060/serio1/input1
+        S: Sysfs=/devices/platform/i8042/serio1/input/input5
+        U: Uniq=
+        H: Handlers=mouse1 event3 js1 
+        B: PROP=0
+        B: EV=f
+        B: KEY=70000 0 0 0 0
+        B: REL=100
+        B: ABS=3
+
+        I: Bus=0011 Vendor=0002 Product=0013 Version=0006
+        N: Name="VirtualPS/2 VMware VMMouse"
+        P: Phys=isa0060/serio1/input0
+        S: Sysfs=/devices/platform/i8042/serio1/input/input4
+        U: Uniq=
+        H: Handlers=mouse2 event4 
+        B: PROP=1
+        B: EV=7
+        B: KEY=30000 0 0 0 0
+        B: REL=3
+
+        I: Bus=0010 Vendor=001f Product=0001 Version=0100
+        N: Name="PC Speaker"
+        P: Phys=isa0061/input0
+        S: Sysfs=/devices/platform/pcspkr/input/input6
+        U: Uniq=
+        H: Handlers=kbd event5 
+        B: PROP=0
+        B: EV=40001
+        B: SND=6
+
+        I: Bus=0000 Vendor=0000 Product=0000 Version=0000
+        N: Name="Android Power Button"
+        P: Phys=
+        S: Sysfs=/devices/virtual/input/input7
+        U: Uniq=
+        H: Handlers=kbd event6 
+        B: PROP=0
+        B: EV=3
+        B: KEY=8000 10000000000000 0
+		EOF
+	fi
+
+    if [ ! -f "$sys_name-$AH/etc/proc/.modules" ]; then
+		cat <<- EOF > "$sys_name-$AH/etc/proc/.modules"
+		bluetooth 552960 0 - Live 0x0000000000000000
+        ecdh_generic 24576 1 bluetooth, Live 0x0000000000000000
+        tcp_diag 16384 0 - Live 0x0000000000000000
+        inet_diag 24576 1 tcp_diag, Live 0x0000000000000000
+        virt_wifi 20480 0 - Live 0x0000000000000000
+        cfg80211 671744 1 virt_wifi, Live 0x0000000000000000
+        sdcardfs 61440 191 - Live 0x0000000000000000
+        parport_pc 24576 0 - Live 0x0000000000000000
+        parport 32768 1 parport_pc, Live 0x0000000000000000
+        crc32c_intel 24576 0 - Live 0x0000000000000000
+        crc32_pclmul 16384 0 - Live 0x0000000000000000
+        ghash_clmulni_intel 16384 0 - Live 0x0000000000000000
+        e1000 139264 0 - Live 0x0000000000000000
+        i2c_piix4 24576 0 - Live 0x0000000000000000
+        9pnet_virtio 20480 0 - Live 0x0000000000000000
+        9pnet 81920 1 9pnet_virtio, Live 0x0000000000000000
+        pcspkr 16384 0 - Live 0x0000000000000000
+        joydev 20480 0 - Live 0x0000000000000000
+        psmouse 147456 0 - Live 0x0000000000000000
+        mac_hid 16384 0 - Live 0x0000000000000000
+        atkbd 28672 0 - Live 0x0000000000000000
+        efi_pstore 16384 0 - Live 0x0000000000000000
+        efivars 20480 1 efi_pstore, Live 0x0000000000000000
+		EOF
+	fi
 }
 
 # 检测是否安装过
@@ -366,8 +475,8 @@ proot \
  --bind=$sys_name-$AH/etc/proc/.uptime:/proc/uptime \
  --bind=$sys_name-$AH/etc/proc/.stat:/proc/stat \
  --bind=$sys_name-$AH/etc/proc/.loadavg:/proc/loadavg  \
- --bind=$sys_name-$AH/etc/proc/bus/input/devices:/proc/bus/input/devices \
- --bind=$sys_name-$AH/etc/proc/modules:/proc/modules   \
+ --bind=$sys_name-$AH/etc/proc/.bus/input/devices:/proc/bus/input/devices \
+ --bind=$sys_name-$AH/etc/proc/.modules:/proc/modules   \
  --bind=/sys \
  --bind=/proc/self/fd/2:/dev/stderr \
  --bind=/proc/self/fd/1:/dev/stdout \
