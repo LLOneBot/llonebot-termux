@@ -259,6 +259,7 @@ setup_fake_proc() {
 	fi
 
     if [ ! -f "$ROOTFS_DIR/etc/proc/.bus/input/devices" ]; then
+        mkdir -p "$ROOTFS_DIR/etc/proc/.bus/input"
 		cat <<- EOF > "$ROOTFS_DIR/etc/proc/.bus/input/devices"
 		I: Bus=0019 Vendor=0000 Product=0001 Version=0000
         N: Name="Power Button"
@@ -383,9 +384,10 @@ update_dns(){
     echo "更新DNS"
     sleep $SLEEP_TIME
     echo "127.0.0.1 localhost" > $ROOTFS_DIR/etc/hosts
+    rm -rf $ROOTFS_DIR/etc/resolv.conf
     echo "nameserver 223.5.5.5
     nameserver 223.6.6.6
-    nameserver 114.114.114.114" >$ROOTFS_DIR/etc/resolv.conf
+    nameserver 114.114.114.114" > $ROOTFS_DIR/etc/resolv.conf
 }
 
 get_distro_link(){
