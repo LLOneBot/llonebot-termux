@@ -378,11 +378,11 @@ echo "正在切换apt镜像源"
 echo "deb https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24 stable main" > $PREFIX/etc/apt/sources.list
 
 apt update
-apt install neofetch wget aria2 proot git -y
+apt install neofetch aria2 proot git -y
 
 
 echo "即将下载安装$SYS_NAME"
-wget -O default.html "https://mirrors.bfsu.edu.cn/lxc-images/images/debian/$SYS_NAME/$AH/default"
+curl -L -o default.html "https://mirrors.bfsu.edu.cn/lxc-images/images/debian/$SYS_NAME/$AH/default"
 target=$(grep -m 1 -o '<td class="link"><a href=".*" title="' "default.html"| sed 's/<[^>]*>//g')
 date="${target:9:-10}"
 rm -rf default.html
@@ -396,12 +396,12 @@ echo "======================================="
 
 # 下载rootfs
 if [ -e ${BAGNAME} ]; then
-    tar -xvf rootfs.tar.xz -C $ROOTFS_DIR
+    tar -xvf $BAGNAME -C $ROOTFS_DIR
 else
-	wget ${DEF_CUR}
-	tar -xvf rootfs.tar.xz -C $ROOTFS_DIR
+	curl -L -o $BAGNAME ${DEF_CUR}
+	tar -xvf $BAGNAME -C $ROOTFS_DIR
 rm -rf ${BAGNAME}
-echo -e "$ROOTFS_DIR 系统已下载，文件夹名为$ROOTFS_DIR"
+echo -e "$ROOTFS_DIR 系统已下载，目录名为$ROOTFS_DIR"
 fi
 sleep $SLEEP_TIME
 
