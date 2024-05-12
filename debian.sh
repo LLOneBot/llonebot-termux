@@ -1,17 +1,23 @@
-if uname -a | grep -q "Android"; then
-    echo "运行环境正确"
-else
-    echo "您的会话正处于 proot 容器内"
-    exit 1
-fi
-
+#!@TERMUX_PREFIX@/bin/bash
 AH=$(uname -m | sed s/aarch64/arm64/ | sed s/x86_64/amd64/)
 SYS_NAME="bookworm"
 ROOTFS_DIR="$SYS_NAME-$AH"
 BAGNAME="rootfs.tar.xz"
 SLEEP_TIME=0.1
+DEFAULT_FAKE_KERNEL_VERSION="6.2.1-perf"
 
-cd ~
+if uname -a | grep -q "Android"; then
+    echo "运行环境正确"
+else
+    echo "您的会话正处于 proot 容器内, 请退出"
+    exit 1
+fi
+
+# 检测是否安装过
+if [ -f "$ROOTFS_DIR/root/.bashrc" ]; then
+    echo -e "现在可以执行 ./$ROOTFS_DIR.sh 运行 $ROOTFS_DIR系统"
+    exit 1
+fi
 
 # Fork from https://github.com/termux/proot-distro
 setup_fake_proc() {
@@ -361,137 +367,128 @@ setup_fake_proc() {
         efivars 20480 1 efi_pstore, Live 0x0000000000000000
 		EOF
 	fi
+    echo "为了兼容性考虑, 已将内核信息伪造成$DEFAULT_FAKE_KERNEL_VERSION"
+}
+setup_time_zone(){
+    echo "设置时区"
+    sleep $SLEEP_TIME
+    echo "export  TZ='Asia/Shanghai'" >> $ROOTFS_DIR/root/.bashrc
+    echo "export  TZ='Asia/Shanghai'" >> $ROOTFS_DIR/etc/profile
+    echo "export PULSE_SERVER=tcp:127.0.0.1:4173" >> $ROOTFS_DIR/etc/profile
+    echo "export PULSE_SERVER=tcp:127.0.0.1:4173" >> $ROOTFS_DIR/root/.bashrc
+    echo 检测到你没有权限读取/proc内的所有文件
+    echo 将自动伪造新文件
+}
+update_dns(){
+    echo "更新DNS"
+    sleep $SLEEP_TIME
+    echo "127.0.0.1 localhost" > $ROOTFS_DIR/etc/hosts
+    echo "nameserver 223.5.5.5
+    nameserver 223.6.6.6
+    nameserver 114.114.114.114" >$ROOTFS_DIR/etc/resolv.conf
 }
 
-# 检测是否安装过
-if [ -f "$ROOTFS_DIR/root/.bashrc" ]; then
+get_distro_link(){
+    DATE=$(curl -SL "https://mirrors.bfsu.edu.cn/lxc-images/images/debian/$SYS_NAME/$AH/default" | \
+    grep -m 1 -o '<td class="link"><a href=".*" title="' | \
+    sed 's/[<td class="link"><a href="|/" title="]//g')
+    echo "https://mirrors.bfsu.edu.cn/lxc-images/images/debian/$SYS_NAME/$AH/default/$DATE/rootfs.tar.xz"
+}
+
+
+install_distro(){
+    echo "即将下载安装$SYS_NAME"
+    echo "获取下载链接"
+
+    DISTRO_LINK=$(get_distro_link)
+    echo $DISTRO_LINK
+    echo "======================================="
+    echo "==============开始下载================="
+    echo "======================================="
+
+    # 下载rootfs
+    mkdir $ROOTFS_DIR
+    if [ -e ${BAGNAME} ]; then
+        tar -xvf $BAGNAME -C $ROOTFS_DIR
+    else
+        curl -L -o $BAGNAME $DISTRO_LINK
+        tar -xvf $BAGNAME -C $ROOTFS_DIR
+    fi
+    # 删除rootfs压缩包
+    rm -rf $BAGNAME
+    echo -e "$ROOTFS_DIR 系统已下载，目录名为$ROOTFS_DIR"
+}
+
+init_dependencies(){
+    echo "正在切换apt镜像源"
+    echo "deb https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24 stable main" > $PREFIX/etc/apt/sources.list
+    apt update
+    apt install proot -y
+}
+
+setup_start_script(){
+    echo "写入启动脚本"
+    sleep $SLEEP_TIME
+    echo "#!/bin/bash
+    unset LD_PRELOAD
+    proot \
+    --bind=/vendor \
+    --bind=/system \
+    --bind=/data/data/com.termux/files/usr \
+    --bind=/storage \
+    --bind=/storage/self/primary:/sdcard \
+    --bind=/data/data/com.termux/files/home \
+    --bind=/data/data/com.termux/cache \
+    --bind=/data/dalvik-cache \
+    --bind=$ROOTFS_DIR/tmp:/dev/shm \
+    --bind=$ROOTFS_DIR/etc/proc/.sysctl_entry_cap_last_cap:/proc/sys/kernel/cap_last_cap \
+    --bind=$ROOTFS_DIR/etc/proc/.vmstat:/proc/vmstat \
+    --bind=$ROOTFS_DIR/etc/proc/.version:/proc/version \
+    --bind=$ROOTFS_DIR/etc/proc/.uptime:/proc/uptime \
+    --bind=$ROOTFS_DIR/etc/proc/.stat:/proc/stat \
+    --bind=$ROOTFS_DIR/etc/proc/.loadavg:/proc/loadavg \
+    --bind=$ROOTFS_DIR/etc/proc/.bus/input/devices:/proc/bus/input/devices \
+    --bind=$ROOTFS_DIR/etc/proc/.modules:/proc/modules \
+    --bind=/sys \
+    --bind=/proc/self/fd/2:/dev/stderr \
+    --bind=/proc/self/fd/1:/dev/stdout \
+    --bind=/proc/self/fd/0:/dev/stdin \
+    --bind=/proc/self/fd:/dev/fd \
+    --bind=/proc \
+    --bind=/dev/urandom:/dev/random \
+    --bind=/data/data/com.termux/files/usr/tmp:/tmp \
+    --bind=/data/data/com.termux/files:$ROOTFS_DIR/termux \
+    --bind=/dev \
+    --root-id \
+    --cwd=/root \
+    -L \
+    --kernel-release=$DEFAULT_FAKE_KERNEL_VERSION \
+    --sysvipc \
+    --link2symlink \
+    --kill-on-exit \
+    --rootfs=$ROOTFS_DIR/ /usr/bin/env -i HOME=/root LANG=zh_CN.UTF-8 TERM=xterm-256color /bin/su -l root" > "$ROOTFS_DIR.sh"
+
+    echo "授予启动脚本执行权限"
+    chmod +x $ROOTFS_DIR.sh
     echo -e "现在可以执行 ./$ROOTFS_DIR.sh 运行 $ROOTFS_DIR系统"
-    exit 1
-else
-    echo 正在安装依赖
-fi
+}
 
-mkdir $ROOTFS_DIR
+# 安装依赖
+init_dependencies
 
-echo "正在切换apt镜像源"
-
-echo "deb https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24 stable main" > $PREFIX/etc/apt/sources.list
-
-apt update
-apt install neofetch aria2 proot git -y
-
-
-echo "即将下载安装$SYS_NAME"
-curl -L -o default.html "https://mirrors.bfsu.edu.cn/lxc-images/images/debian/$SYS_NAME/$AH/default"
-target=$(grep -m 1 -o '<td class="link"><a href=".*" title="' "default.html"| sed 's/<[^>]*>//g')
-date="${target:9:-10}"
-rm -rf default.html
-DEF_CUR="https://mirrors.bfsu.edu.cn/lxc-images/images/debian/$SYS_NAME/$AH/default/$date/rootfs.tar.xz"
-echo "======================================="
-echo "==============开始下载================="
-
-echo $DEF_CUR
-echo "======================================="
-
-
-# 下载rootfs
-if [ -e ${BAGNAME} ]; then
-    tar -xvf $BAGNAME -C $ROOTFS_DIR
-else
-	curl -L -o $BAGNAME ${DEF_CUR}
-	tar -xvf $BAGNAME -C $ROOTFS_DIR
-rm -rf ${BAGNAME}
-echo -e "$ROOTFS_DIR 系统已下载，目录名为$ROOTFS_DIR"
-fi
-sleep $SLEEP_TIME
+# 安装发行版本
+install_distro
 
 # 配置容器
-neofetch >>systeminfo.log
-hostinfo=$(cat systeminfo.log |grep Host |awk -F':' '{print $2}')
-echo "更新DNS"
-sleep $SLEEP_TIME
-echo "127.0.0.1 localhost" > $ROOTFS_DIR/etc/hosts
-rm $ROOTFS_DIR/etc/hostname
-echo "$hostinfo" > $ROOTFS_DIR/etc/hostname
-echo "127.0.0.1 $hostinfo" > $ROOTFS_DIR/etc/hosts
-rm -rf $ROOTFS_DIR/etc/resolv.conf &&
-echo "nameserver 223.5.5.5
-nameserver 223.6.6.6
-nameserver 114.114.114.114" >$ROOTFS_DIR/etc/resolv.conf
-echo "设置时区"
-sleep $SLEEP_TIME
-rm systeminfo.log
-echo "export  TZ='Asia/Shanghai'" >> $ROOTFS_DIR/root/.bashrc
-echo "export  TZ='Asia/Shanghai'" >> $ROOTFS_DIR/etc/profile
-echo "export PULSE_SERVER=tcp:127.0.0.1:4173" >> $ROOTFS_DIR/etc/profile
-echo "export PULSE_SERVER=tcp:127.0.0.1:4173" >> $ROOTFS_DIR/root/.bashrc
-echo 检测到你没有权限读取/proc内的所有文件
-echo 将自动伪造新文件
-mkdir proot_proc
-aria2c -o proc.tar.xz -d ./proot_proc/ -x 16 https://gitee.com/yudezeng/proot_proc/raw/master/proc.tar.xz
-sleep $SLEEP_TIME
-mkdir tmp
-echo 正在解压伪造文件
 
-tar -xvJf proot_proc/proc.tar.xz -C tmp 
-cp -r tmp/usr/local/etc/tmoe-linux/proot_proc tmp/
-sleep $SLEEP_TIME
-echo 复制文件
-cp -r tmp/proot_proc $ROOTFS_DIR/etc/proc
-sleep $SLEEP_TIME
-echo 删除缓存
-rm proot_proc tmp -rf
-if grep -q 'ubuntu' "$ROOTFS_DIR/etc/os-release" ; then
-    touch "$ROOTFS_DIR/root/.hushlogin"
-fi
+## 更新DNS
+update_dns
 
-sleep $SLEEP_TIME
+## 设置时区
+setup_time_zone
 
-echo "写入启动脚本"
-echo "为了兼容性考虑已将内核信息伪造成5.17.18-perf"
+## 伪造/proc
+setup_fake_proc
 
-sleep $SLEEP_TIME
-cat > $ROOTFS_DIR.sh <<- EOM
-#!/bin/bash
-unset LD_PRELOAD
-proot \
- --bind=/vendor \
- --bind=/system \
- --bind=/data/data/com.termux/files/usr \
- --bind=/storage \
- --bind=/storage/self/primary:/sdcard \
- --bind=/data/data/com.termux/files/home \
- --bind=/data/data/com.termux/cache \
- --bind=/data/dalvik-cache \
- --bind=$ROOTFS_DIR/tmp:/dev/shm \
- --bind=$ROOTFS_DIR/etc/proc/.sysctl_entry_cap_last_cap:/proc/sys/kernel/cap_last_cap
- --bind=$ROOTFS_DIR/etc/proc/.vmstat:/proc/vmstat \
- --bind=$ROOTFS_DIR/etc/proc/.version:/proc/version \
- --bind=$ROOTFS_DIR/etc/proc/.uptime:/proc/uptime \
- --bind=$ROOTFS_DIR/etc/proc/.stat:/proc/stat \
- --bind=$ROOTFS_DIR/etc/proc/.loadavg:/proc/loadavg  \
- --bind=$ROOTFS_DIR/etc/proc/.bus/input/devices:/proc/bus/input/devices \
- --bind=$ROOTFS_DIR/etc/proc/.modules:/proc/modules   \
- --bind=/sys \
- --bind=/proc/self/fd/2:/dev/stderr \
- --bind=/proc/self/fd/1:/dev/stdout \
- --bind=/proc/self/fd/0:/dev/stdin \
- --bind=/proc/self/fd:/dev/fd \
- --bind=/proc \
- --bind=/dev/urandom:/dev/random \
- --bind=/data/data/com.termux/files/usr/tmp:/tmp \
- --bind=/data/data/com.termux/files:$ROOTFS_DIR/termux \
- --bind=/dev \
- --root-id \
- --cwd=/root \
- -L \
- --kernel-release=5.17.18-perf \
- --sysvipc \
- --link2symlink \
- --kill-on-exit \
- --rootfs=$ROOTFS_DIR/ /usr/bin/env -i HOME=/root LANG=zh_CN.UTF-8 TERM=xterm-256color /bin/su -l root
-EOM
-
-echo "授予启动脚本执行权限"
-chmod +x $ROOTFS_DIR.sh
-echo -e "现在可以执行 ./$ROOTFS_DIR.sh 运行 $ROOTFS_DIR系统"
+## 写入启动脚本
+setup_start_script
