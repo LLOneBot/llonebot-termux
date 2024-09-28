@@ -18,10 +18,9 @@
 - 4. 远程
 - 5. 修改 LLOneBot 配置
 
-## 1. 安装 ZeroTermux 和 VncView
+## 1. 安装 ZeroTermux
 
 前往[hanxinhao000/ZeroTermux](https://github.com/hanxinhao000/ZeroTermux/releases)下载 ZeroTermux 安装包并安装
-安装一个 vnc 客户端，推荐 [RealVNC](https://play.google.com/store/apps/details?id=com.realvnc.viewer.android)
 
 - 注意事项：
   直接从 GitHub 下载 ZeroTermux 速度可能会很慢，建议使用 [ghproxy.com](https://ghproxy.com) 代理
