@@ -10,7 +10,7 @@ qq --no-sandbox --disable-gpu" > /root/start.sh
 
 # 安装LLOneBot  
 version=v3.33.10
-curl -L -o /tmp/LLOneBot.zip https://mirror.ghproxy.com/https://github.com/LLOneBot/LLOneBot/releases/download/$version}/LLOneBot.zip
+curl -L -o /tmp/LLOneBot.zip https://mirror.ghproxy.com/https://github.com/LLOneBot/LLOneBot/releases/download/$version/LLOneBot.zip
 mkdir -p /LiteLoader/plugins/LLOneBot
 unzip /tmp/LLOneBot.zip -d /LiteLoader/plugins/LLOneBot
 rm /tmp/LLOneBot.zip 
