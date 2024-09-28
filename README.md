@@ -77,13 +77,13 @@ bash bookworm-arm64.sh
 bash /root/start.sh
 ```
 
-### 4. 远程登录
+### 4. 登录
 
-浏览器访问`http://localhost:6099/api/panel/getQQLoginQRcode`
+双指缩放终端，扫码登录
 
 ### 5. 修改 LLOneBot 配置
 
-浏览器访问`http://localhost:6099/plugin/LLOneBot/iframe.html`
+修改proot容器 `/LiteLoader/plugins/LLOneBot` 内的配置文件
 
 ## 参考与基础
 
